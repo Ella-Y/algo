@@ -3,13 +3,11 @@ import java.util.*;
 
 public class Main {
 	static BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-	static int d[];
-	static boolean visited[];
-	static pair ary[][];
-	static int N,M;
-	static int answer;
-	static int answerTime;
-	static final int INF = Integer.MAX_VALUE;
+	static int dt[];
+	static int dc[];
+	static ArrayList<pair> ary[];
+	static final int INF = 10000*10000+1;
+	
 	public static void main(String[] args) throws IOException {
 		int T=Integer.parseInt(br.readLine());
 		for(int test=1;test<=T;test++) {
@@ -19,23 +17,20 @@ public class Main {
 	
 	private static void problem() throws IOException{
 		StringTokenizer st=new StringTokenizer(br.readLine());
-		answer = Integer.MAX_VALUE;
-		N=Integer.parseInt(st.nextToken())+1; //공항의 수 N<=100
-		M=Integer.parseInt(st.nextToken()); //지원비용
+		int N=Integer.parseInt(st.nextToken())+1; //공항의 수 N<=100
+		int M=Integer.parseInt(st.nextToken()); //지원비용
 		int K=Integer.parseInt(st.nextToken()); //티켓 정보의 수
 		
-		d=new int[N];
-		visited=new boolean[N];
-		ary=new pair[N][N];
+		dt=new int[N];
+		dc=new int[N];
+		ary=new ArrayList[N];
+		
+		for(int i=0;i<N;i++)
+			ary[i]=new ArrayList<>();
 		
 		for(int i=0;i<N;i++) {
-			for(int j=0;j<N;j++)
-			{
-				if(i==j) {
-					ary[i][j]=new pair(0,0); continue;
-				}
-				ary[i][j]=new pair(INF,INF);
-			}
+			dt[i]=INF;	//시간
+			dc[i]=INF; //비용
 		}
 		
 		int u,v,c,t;
@@ -45,67 +40,90 @@ public class Main {
 			v=Integer.parseInt(st.nextToken());
 			c=Integer.parseInt(st.nextToken());
 			t=Integer.parseInt(st.nextToken());
-			ary[u][v]=new pair(c,t);
+			ary[u].add(new pair(v,c,t));
 			
 		}
-		answer =answerTime = Integer.MAX_VALUE;
 		
-		visited[1]=true;
+		PriorityQueue<pair> pq=new PriorityQueue<>();
+		pq.offer(new pair(1,0,0));
+		dt[1]=0;
+		dc[1]=0;
 		
-		dfs(1,0,0,0);
-		if(answer == Integer.MAX_VALUE) System.out.println("Poor KCM");
-		else System.out.println(answer);
+		int tcost,ttime,cur;
 		
-	}
-	
-	private static void dfs(int cur,int time,int cost, int deep) {
-		if(cost>M) return;
-		if(cur==N-1) {
-			answer = Math.min(time, answer);
-			answerTime = time;
-			return;
-		}
-		if(deep == N) {
-			//모든 공항을 다 돌았다.
-			return;
-		}
-		
-		if(answerTime!=Integer.MAX_VALUE && answerTime<time) {
-			return;
-		}
-		
-		for(int i=0;i<ary[cur].length;i++) {
-			if(ary[cur][i].time == INF || ary[cur][i].time ==0) continue; //갈 수 없음
-			
-			d[i] = Math.min(d[i], dfs())
-		}
-		
-		/*for(pair next : ary[cur]) {
-			if(!visited[next.idx]) {
-				visited[next.idx] =true;
-				dfs(next.idx,time+next.time,cost+next.cost,deep+1);
-				visited[next.idx] = false;
+		while(!pq.isEmpty()) {
+			pair cc = pq.poll(); //지금까지 온...
+			cur=cc.idx;
+			for(pair next : ary[cur]) {
+				
+				if(dc[cur]==INF || dt[cur]==INF) continue;
+				
+				tcost=dc[cur]+next.cost;
+				ttime=dt[cur]+next.time;
+				
+				if(M == tcost) { //이미 주어진 비용을 다 씀
+					if(dt[next.idx] >= ttime) {
+						dt[next.idx] =ttime;
+						dc[next.idx] =Math.min(dc[next.idx], tcost);
+					}
+				}
+				else if(M < tcost) {continue;}
+				else {
+					if(dt[next.idx] > ttime) {
+						dt[next.idx]= ttime;
+						dc[next.idx]= tcost;
+						pq.offer(new pair(next.idx,dc[next.idx],dt[next.idx]));
+					}
+				}
 			}
-		}*/
+			
+		}
+		
+		//System.out.println("cost:"+ Arrays.toString(dc));
+		//System.out.println("time:"+ Arrays.toString(dt));
+		
+		if(dt[N-1] == INF)
+			System.out.println("Poor KCM");
+		else
+			System.out.println(dt[N-1]);
+		
 		
 		
 	}
-	
-	static class pair{
+	static class pair implements Comparable<pair>{
+		int idx;
 		int cost;
 		int time;
 		
-		public pair(int cost, int time) {
+	
+		@Override
+		public String toString() {
+			return "pair [idx=" + idx + ", cost=" + cost + ", time=" + time + "]";
+		}
+
+
+		public pair(int idx, int cost, int time) {
 			super();
+			this.idx = idx;
 			this.cost = cost;
 			this.time = time;
 		}
-		@Override
-		public String toString() {
-			return "pair [cost=" + cost + ", time=" + time + "]";
-		}
 
-		
+
+		@Override
+		public int compareTo(pair o) {
+			
+			if(o.time == time) {
+				if(o.cost == cost) {
+					return 0;
+				}
+				else if(o.cost> cost) return -1;
+				else return 1;
+			}
+			else if(o.time>time) return -1;
+			else return 1;
+			
+		}
 		
 		
 	}
