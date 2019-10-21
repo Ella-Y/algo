@@ -2,14 +2,14 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Scanner;
 
 public class Main {
 	static Scanner sc=new Scanner(System.in);
 	static BufferedWriter bw= new BufferedWriter(new OutputStreamWriter(System.out));
 	static int[] ary;
-	static HashSet<int[]> hash=new HashSet<>();
+	static LinkedHashSet<String> hash=new LinkedHashSet<>();
 	
 	public static void main(String[] args) throws IOException {
 		int N= sc.nextInt();
@@ -21,19 +21,23 @@ public class Main {
 		}
 		
 		Arrays.sort(ary);
-		dfs(new int[M],0,new boolean[N],answer);
+		dfs(new int[M],0,new boolean[N]);
 		
-		for(int[] temp : hash) {
-			System.out.println(Arrays.toString(temp));
+		for (String string : hash) {
+			bw.write(string+"\n");
 		}
+		
 		bw.flush();
+		
 	}
 
-	private static void dfs(int[] picked, int pi, boolean[] visited,) throws IOException {
-		if(pi == M) {
-			int []temp = new int[picked.length];
-			for(int i=0;i<picked.length;i++) temp[i]=picked[i];
-			hash.add(temp);
+	private static void dfs(int[] picked, int pi, boolean[] visited) throws IOException {
+		if(pi == picked.length) {
+			StringBuilder sb=new StringBuilder();
+			for(int i=0;i<picked.length;i++) {
+				sb.append(picked[i]+" ");
+			}
+			hash.add(sb.toString().trim());
 			
 			return;
 		}
@@ -41,8 +45,8 @@ public class Main {
 		for(int i=0;i<ary.length;i++) {
 			if(!visited[i]) {
 				visited[i]=true;
-				picked[pi] = (int) ary[i];
-				dfs(picked,pi+1,visited,M);
+				picked[pi] =  ary[i];
+				dfs(picked,pi+1,visited);
 				visited[i]=false;
 			}
 		}
