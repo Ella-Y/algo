@@ -9,18 +9,16 @@ public class Main {
 	public static void main(String[] args) throws IOException{
 		
 		StringTokenizer stk = new StringTokenizer(br.readLine());
-		ArrayList<Integer> ary1[];
-		ArrayList<Integer> ary2[];
-		
+				
 		int N = Integer.parseInt(stk.nextToken());
 		int M = Integer.parseInt(stk.nextToken());
-		
-		ary1 = new ArrayList[N];
-		ary2 = new ArrayList[N];
-		
+						
+		int dis[][]=new int [N][N];
 		for(int i=0;i<N;i++) {
-			ary1[i] = new ArrayList<>();
-			ary2[i] = new ArrayList<>();
+			for(int j=0;j<N;j++) {
+				dis[i][j]=INF;
+				if(i==j)dis[i][j]=0;
+			}
 		}
 		
 		int a,b;
@@ -28,31 +26,51 @@ public class Main {
 			stk = new StringTokenizer(br.readLine());
 			a=Integer.parseInt(stk.nextToken())-1;
 			b=Integer.parseInt(stk.nextToken())-1;
-			ary1[a].add(b);
-			ary2[b].add(a);
+			dis[a][b]=1;
 		}
 		
-		int dis1[][]=floyd(ary1);
-		int dis2[][]=floyd(ary2);
-		
-		print(dis1);
-		System.out.println("=======");
-		print(dis2);
+		floyd(dis);
 		
 		
-		int answer=0;
+		int answer = 0;
+		int cnt;
+		
 		for(int i=0;i<N;i++) {
-			
-			
-			
-			/*for(int j=0;j<N;j++) {
-				if(dis1[i][j] + dis2[i][j] == N) answer++;
-			}*/
+			cnt=N;
+			for(int j=0;j<N;j++) {
+				if(dis[i][j]!=INF) cnt--;
+				else if(dis[i][j]==INF && dis[j][i]!=INF) {
+					dis[i][j]=dis[j][i];
+					cnt--;
+				}
+			}
+			if(cnt==0) ++answer;
 		}
 		
+		//print(dis);
 		System.out.println(answer);
 		
 	}
+	
+	public static void floyd(int [][]dis){
+		int N=dis.length;
+		
+		for(int mid=0;mid<N;mid++) {
+			for(int a=0;a<N;a++) {
+				for(int b=0;b<N;b++) {
+					
+					if(dis[a][mid]==INF || dis[mid][b]==INF) continue;
+					
+					if(dis[a][b] > dis[a][mid]+dis[mid][b]) {
+						dis[a][b] = dis[a][mid]+dis[mid][b];
+					}
+					
+				}
+			}
+		}
+		
+	}
+	
 	public static void print(int dis[][]) {
 		for(int i=0;i<dis.length;i++) {
 			for(int j=0;j<dis.length;j++) {
@@ -63,33 +81,6 @@ public class Main {
 			}
 			System.out.println();
 		}
-	}
-	
-	public static int[][] floyd(ArrayList<Integer> ary[]){
-		int[][] dis = new int[ary.length][ary.length];
-		
-		for(int i=0;i<ary.length;i++) {
-			for(int j=0;j<ary.length;j++) {
-				dis[i][j]=0;
-			}
-			
-			for(int next:ary[i]) {
-				dis[i][next] = 1;
-			}
-		}
-		
-		for(int mid=0;mid<ary.length;mid++) {
-			for(int a=0;a<ary.length;a++) {
-				for(int b=0;b<ary.length;b++) {
-					if(dis[a][mid]!=0 && dis[mid][b]!=0 &&
-							dis[a][b] < dis[a][mid] +dis[mid][b]) {
-						dis[a][b] = dis[a][mid]+dis[mid][b];
-					}
-				}
-			}
-		}
-		
-		return dis;
 	}
 
 }
