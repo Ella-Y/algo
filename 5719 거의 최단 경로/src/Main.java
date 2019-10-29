@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 /*
- * 5719. πÈ¡ÿ ∞≈¿« √÷¥‹ ∞Ê∑Œ
+ * 5719. Î∞±Ï§Ä Í±∞Ïùò ÏµúÎã® Í≤ΩÎ°ú
  * */
 public class Main {
 	static private BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
@@ -44,67 +44,114 @@ public class Main {
 			ary[u][v]=p;
 		}
 		
+		minRoute=new HashSet<>();
+		
 		int min = dijkstra(S,D);
-		int t=0;
-		while((t = dijkstra(S,D)) ==min);
+		//System.out.println(minRoute);
+		//System.out.println(min);
 		
-		if(t==INF) //System.out.println(-1);
+		for(Edge e:minRoute) {
+			ary[e.i][e.j]=INF; 
+		}
+		
+		min = dijkstra(S,D);
+		if(min==INF) //System.out.println(-1);
 			bw.write("-1\n");
-		else //System.out.println(t);
-			bw.write(t+"\n");
-		
+		else //System.out.println(min);
+			bw.write(min+"\n");
+		//System.out.println(dijkstra(S,D));
 	}
-
+	
+	private static HashSet<Edge> minRoute;
+	
 	public static int dijkstra(int S,int D) {
 		PriorityQueue<Pair> pq=new PriorityQueue<>();
-		
-		int path[]=new int [ary.length];
+
 		int dis[]=new int [ary.length];
 		
-		for(int i=0;i<dis.length;i++) dis[i]=INF;
+		for(int i=0;i<dis.length;i++) {
+			dis[i]=INF;
+		}
 		
-		dis[S]=0; //Ω√¿€¡ˆ¡°¿∫ 0
-		pq.offer(new Pair(S,0));
+		dis[S]=0; //ÏãúÏûëÏßÄÏ†êÏùÄ 0
+		pq.offer(new Pair(S,0,String.valueOf(S)));
 		
 		outer:while(!pq.isEmpty()) {
 			Pair cur = pq.poll();
-			if(cur.idx == D) break;
-			//cur¿« ¿ßƒ°ø°º≠ √‚πﬂ
-			for(int k=0;k<ary[cur.idx].length;k++) { //curø° ø¨∞·µ» ∞ÕµÈ
+			//System.out.println(cur);
+			if(cur.idx == D) {
+				if(dis[D] == cur.w) {
+					//System.out.println(cur.str);
+					StringTokenizer stk= new StringTokenizer(cur.str);
+					int u1= Integer.parseInt(stk.nextToken());
+					int u2= Integer.parseInt(stk.nextToken());
+					
+					minRoute.add(new Edge(u1,u2));
+					
+					while(stk.hasMoreTokens()) {
+						u1=u2;
+						u2=Integer.parseInt(stk.nextToken());
+						
+						minRoute.add(new Edge(u1,u2));
+					}
+				}
+			}
+			
+			//curÏùò ÏúÑÏπòÏóêÏÑú Ï∂úÎ∞ú
+			for(int k=0;k<ary[cur.idx].length;k++) { //curÏóê Ïó∞Í≤∞Îêú Í≤ÉÎì§
 				if(ary[cur.idx][k]==INF || ary[cur.idx][k] ==0) continue;
 				
-				if(dis[k] > ary[cur.idx][k]+cur.w) {
+				if(dis[k] >= ary[cur.idx][k]+cur.w) {
 					dis[k] = ary[cur.idx][k]+cur.w;
-					path[k]= cur.idx; //√‚πﬂ ¿Œµ¶Ω∫
-					pq.offer(new Pair(k,dis[k]));
+					StringBuilder sb= new StringBuilder(cur.str);
+					sb.append(" ");
+					sb.append(k);
+					pq.offer(new Pair(k,dis[k],sb.toString()));
 				}
-
+				
 			}
 		}
 		
-		int prev=D;
-		int cc=path[prev]; //cc->prev
-		
-		while(prev!=0) {
-			//System.out.println(cc+" "+prev);
-			ary[cc][prev] = 0; //∞Ê∑Œ ¡¶∞≈
-			prev=cc;
-			cc=path[prev];
-			
-		}
-		
-		//System.out.println(Arrays.toString(path));
-		//System.out.println(Arrays.toString(dis));
 		
 		return dis[D];
 	}
-	
+	static class Edge{
+		int i;
+		int j;
+		@Override
+		public String toString() {
+			return "Edge [i=" + i + ", j=" + j + "]";
+		}
+		public Edge(int i, int j) {
+			super();
+			this.i = i;
+			this.j = j;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if(obj instanceof Edge) {
+				Edge ob=(Edge) obj;
+				if(ob.i ==this.i && ob.j==this.j) return true;
+				else return false;
+			}
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			// TODO Auto-generated method stub
+			return super.hashCode();
+		}
+		
+	}
 	static class Pair implements Comparable<Pair>{
 		int idx;
 		int w;
-		public Pair(int idx, int w) {
+		String str;
+		public Pair(int idx, int w, String t) {
 			this.idx = idx;
 			this.w = w;
+			this.str=t;
 		}
 		@Override
 		public String toString() {
