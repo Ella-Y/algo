@@ -7,8 +7,10 @@ import java.util.StringTokenizer;
 public class Main {
 	static BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 	static boolean visited[];
-	static ArrayList<Integer> ary[];
-	
+
+//A그룹의 i노드에서 B그룹의 j로 갈때, A[i]는 이러한 j들의 모음
+	static ArrayList<Integer> ary[]; 
+
 	// A[i], B[i]: 각 정점이 매칭된 반대편 정점 번호를 기록한다.
 	static int A[];
 	static int B[];
@@ -18,7 +20,7 @@ public class Main {
 		
 		int N = Integer.parseInt(stk.nextToken());
 		int M = Integer.parseInt(stk.nextToken())+1; //축사의 총 개수  //축사는 1부터 시작함..
-		
+		//input ------
 		ary=new ArrayList[M];
 		
 		for(int i=0;i<M;i++) {
@@ -33,7 +35,8 @@ public class Main {
 				ary[i+1].add(Integer.parseInt(stk.nextToken()));
 			}
 		}
-		
+		//input end------
+
 		int match=0;
 		
 		A=new int[M];
