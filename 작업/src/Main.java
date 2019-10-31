@@ -17,6 +17,7 @@ public class Main {
 		StringTokenizer stk;
 		PriorityQueue<Job> pq=new PriorityQueue<>();
 		
+		//반대로 해야겠네.... 제길
 		int k,temp;
 		for(int i=0;i<N;i++) {
 			ary[i]=new ArrayList<>();
@@ -30,6 +31,7 @@ public class Main {
 				indegree[temp]++;
 			}
 		}
+		 
 		
 		for(int i=0;i<N;i++) {
 			if(indegree[i]==0) pq.offer(new Job(0,time[i],i));
@@ -46,11 +48,12 @@ public class Main {
 			for(int next:ary[job.idx]) {
 				indegree[next]--;
 				if(indegree[next]==0) pq.offer(new Job(job.fin,job.fin+time[next],next));
+			
 			}
 			
 		}
 		
-		
+		System.out.println(fin);
 
 	}
 	
