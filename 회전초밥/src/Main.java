@@ -25,6 +25,8 @@ public class Main {
 		}
 		didx=0;
 		
+		
+		
 		for(int i=0;i<K;i++) {
 			if(susi[dishes[i]]==0) ++max;
 			++susi[dishes[i]];
