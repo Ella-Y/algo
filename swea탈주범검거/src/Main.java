@@ -12,6 +12,7 @@ public class Main {
 	static int R, C;
 	static int L; // 탈출에 소요된시간.
 	static int mmap[][];
+	static boolean visited[][][];
 
 	public static void main(String[] args) throws IOException {
 		//br = new BufferedReader(new FileReader("input.txt"));
